@@ -1,0 +1,5 @@
+.idea/
+.gradle/
+.metals/
+build/
+**/build/
