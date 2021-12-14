@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 class HeartService : Service() {
-    val ALARM_ACTION = "UDP_HEART_ACTION"
+    private val ALARM_ACTION = "UDP_HEART_ACTION"
     private val TIME_INTERVAL = 1000 * 5
     private var pendingIntent: PendingIntent? = null
     private var alarmManager: AlarmManager? = null
@@ -32,16 +32,15 @@ class HeartService : Service() {
 
     var alarmReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.i("TMSdk", "ServerHeartService receive")
+            Log.i(TAG, "ServerHeartService receive")
 
             if (!AppUtil.isBackground(context)) {
-                val port = 8080
                 val opf = EncryptUtils.encryptSHA1ToString(StaticConfig.USERID + StaticConfig.UIDFP)
                     .lowercase(Locale.getDefault())
                 TMSdk.sendUdpMessage(
                     Logs.UpdLog(
-                        address = "localhost",
-                        port = port,
+                        address = StaticConfig.HEART_HOST,
+                        port = StaticConfig.HEART_PORT,
                         count = count.getAndIncrement() % 15,
                         uidfp = opf
                     )
@@ -60,7 +59,6 @@ class HeartService : Service() {
                     pendingIntent
                 )
             }
-            Log.i(TAG, "app是否在后台:" + AppUtil.isBackground(context))
         }
     }
 

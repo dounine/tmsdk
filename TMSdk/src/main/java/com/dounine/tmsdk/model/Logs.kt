@@ -1,5 +1,6 @@
 package com.dounine.tmsdk.model
 
+
 object Logs {
     data class Ext(
         val ccode: String,
@@ -39,5 +40,10 @@ object Logs {
 
     data class Hello(
         val name: String
+    )
+
+    data class HelloNull(
+        val name: String,
+        val age: String? = null
     )
 }

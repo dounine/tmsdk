@@ -27,10 +27,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        TMSdk.Companion.userId("123");
         TMSdk.Companion.init(this, "abc", "lake");
-
         TMSdk.Companion.appStart();
-
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -48,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TMSdk.Companion.appExit(this);
     }
 
     @Override

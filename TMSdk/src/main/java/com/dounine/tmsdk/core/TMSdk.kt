@@ -6,9 +6,9 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import com.alibaba.fastjson.JSON
 import com.blankj.utilcode.util.DeviceUtils
 import com.blankj.utilcode.util.EncryptUtils
-import com.blankj.utilcode.util.GsonUtils
 import com.dounine.tmsdk.model.Logs
 import com.dounine.tmsdk.util.DeviceUtil
 import com.dounine.tmsdk.util.StaticConfig
@@ -46,11 +46,12 @@ class TMSdk {
                         socket.send(packet)
                     } else if (msg.obj is Logs.Log) {
                         val log = msg.obj as Logs.Log
-                        Log.i(TAG, "handleMessage: ${GsonUtils.toJson(log)}")
+                        val jsonStr = JSON.toJSONString(log)
+                        Log.i(TAG, "handleMessage: ${jsonStr}")
                         val build = Request.Builder()
                             .url(StaticConfig.UPLOAD_URL)
                             .post(
-                                GsonUtils.toJson(log).toRequestBody(
+                                jsonStr.toRequestBody(
                                     "application/json;charset=utf-8".toMediaType()
                                 )
                             )
@@ -73,7 +74,6 @@ class TMSdk {
     }
 
     companion object {
-        private var context: Context? = null
         private var appid: String? = null
         private var channel: String? = null
         private var userId: String? = null
@@ -95,7 +95,6 @@ class TMSdk {
          * 初始化
          */
         fun init(context: Context, appid: String, channel: String) {
-            this.context = context
             this.appid = appid
             this.channel = channel
 
@@ -105,7 +104,7 @@ class TMSdk {
             Log.i(TAG, "init: " + this.userId)
             this.userId = EncryptUtils.encryptMD5ToString(
                 this.appid + this.userId
-            )
+            ).lowercase(Locale.getDefault())
 
             StaticConfig.APPID = this.appid!!
             StaticConfig.CHANNEL = this.channel!!
@@ -136,7 +135,7 @@ class TMSdk {
                     ext = Logs.Ext(
                         ccode = this.channel!!,
                         ak = this.appid!!,
-                        type = "login",
+                        type = "login_in",
                         tid = this.userId!!,
                         uid = this.userId!!,
                         uidfp = EncryptUtils.encryptSHA1ToString(this.userId!! + StaticConfig.UIDFP)
@@ -155,12 +154,58 @@ class TMSdk {
             handlerThread?.handler?.sendMessage(message)
         }
 
-        fun appShow() {
+        fun appExit(context: Context) {
+            Log.i(TAG, "appExit")
+            if (null != udpIntent) {
+                context.stopService(udpIntent)
+            }
+            handlerThread?.interrupt()
+        }
 
+        fun appShow() {
+            val message = Message()
+            message.obj = Logs.Log(
+                userLog = Logs.UserLog(
+                    n = "a_tm_sdk",
+                    v = StaticConfig.VERSION,
+                    ext = Logs.Ext(
+                        ccode = this.channel!!,
+                        ak = this.appid!!,
+                        type = "login_in",
+                        tid = this.userId!!,
+                        uid = this.userId!!,
+                        uidfp = EncryptUtils.encryptSHA1ToString(this.userId!! + StaticConfig.UIDFP)
+                            .lowercase(Locale.getDefault()),
+                        gender = 0,
+                        scene = ""
+                    ),
+                    device = null
+                )
+            )
+            handlerThread?.handler?.sendMessage(message)
         }
 
         fun appHide() {
-
+            val message = Message()
+            message.obj = Logs.Log(
+                userLog = Logs.UserLog(
+                    n = "a_tm_sdk",
+                    v = StaticConfig.VERSION,
+                    ext = Logs.Ext(
+                        ccode = this.channel!!,
+                        ak = this.appid!!,
+                        type = "login_out",
+                        tid = this.userId!!,
+                        uid = this.userId!!,
+                        uidfp = EncryptUtils.encryptSHA1ToString(this.userId!! + StaticConfig.UIDFP)
+                            .lowercase(Locale.getDefault()),
+                        gender = 0,
+                        scene = ""
+                    ),
+                    device = null
+                )
+            )
+            handlerThread?.handler?.sendMessage(message)
         }
     }
 }

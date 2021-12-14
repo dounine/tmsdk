@@ -1,6 +1,64 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'maven-publish'
+    id 'signing'
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set("sources")
+}
+signing {
+    sign publishing.publications
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = 'com.dounine'
+                artifactId = 'tmsdk'
+                version = '1.0.0'
+                from components.release
+                artifact sourcesJar
+
+                pom {
+                    name = artifactId
+                    description = "android tmsdk base analyse"
+                    url = 'https://github.com/dounine/tmsdk'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'lake'
+                            name = 'lake'
+                            email = 'amwoqmgo@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/dounine/tmsdk.git'
+                        developerConnection = 'scm:git:ssh://git@github.com/dounine/tmsdk.git'
+                        url = 'https://github.com/dounine/tmsdk/'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                allowInsecureProtocol(true)
+                credentials {
+                    username = NEXUS_USERNAME
+                    password = NEXUS_PASSWORD
+                }
+            }
+        }
+    }
 }
 
 android {
@@ -29,10 +87,15 @@ android {
     }
 }
 
-dependencies {
+repositories {
+    google()
+    mavenCentral()
+}
 
-//    implementation 'com.alibaba:fastjson:1.2.37'
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+
+dependencies {
+    implementation 'com.alibaba:fastjson:1.2.37'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.blankj:utilcodex:1.31.0'
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.4.0'
