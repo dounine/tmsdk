@@ -53,8 +53,8 @@ afterEvaluate {
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
                 allowInsecureProtocol(true)
                 credentials {
-                    username = NEXUS_USERNAME
-                    password = NEXUS_PASSWORD
+                    username = System.getenv("NEXUS_USERNAME")
+                    password = System.getenv("NEXUS_PASSWORD")
                 }
             }
         }
