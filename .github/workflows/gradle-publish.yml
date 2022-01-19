@@ -21,10 +21,12 @@ jobs:
           server-username: ${{ secrets.NEXUS_USERNAME }}
           server-password: ${{ secrets.NEXUS_PASSWORD }}
           gpg-passphrase:  ${{ secrets.GPG_PASSWORD }}
-      - name: Publish to Maven Central Repo
-        uses: samuelmeuli/action-maven-publish@v1
+      - name: Validate Gradle wrapper
+          uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+      - name: Publish package
+          uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
         with:
-          gpg_private_key: ${{ secrets.GPG_SECRET }}
-          gpg_passphrase: ${{ secrets.GPG_PASSWORD }}
+          arguments: publish
+        env:
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }}
