@@ -4,13 +4,6 @@ plugins {
     id 'maven-publish'
     id 'signing'
 }
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-}
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier.set("sources")
