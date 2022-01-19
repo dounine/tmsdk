@@ -1,4 +1,4 @@
-name: Maven Central Repo Deployment
+name: Maven Central Repo Deployment1
 on:
   push:
     branches: [ main ]
