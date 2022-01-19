@@ -32,8 +32,7 @@ class HeartService : Service() {
 
     var alarmReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.i(TAG, "ServerHeartService receive")
-
+            Log.d(TAG, "ServerHeartService receive")
             if (!AppUtil.isBackground(context)) {
                 val opf = EncryptUtils.encryptSHA1ToString(StaticConfig.USERID + StaticConfig.UIDFP)
                     .lowercase(Locale.getDefault())
