@@ -52,10 +52,17 @@ afterEvaluate {
                 def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
                 credentials {
-                    username System.getenv("NEXUS_USERNAME") == null ? NEXUS_USERNAME : System.getenv("NEXUS_USERNAME")
-                    password System.getenv("NEXUS_PASSWORD") == null ? NEXUS_PASSWORD : System.getenv("NEXUS_PASSWORD")
+                    username System.getenv("NEXUS_USERNAME") ?: NEXUS_USERNAME
+                    password System.getenv("NEXUS_PASSWORD") ?: NEXUS_PASSWORD
                 }
             }
+//            maven { //发布到github package
+//                url = uri("https://maven.pkg.github.com/dounine/tmsdk")
+//                credentials {
+//                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME") ?: GITHUB_USERNAME
+//                    password = project.findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN") ?: GITHUB_TOKEN
+//                }
+//            }
         }
     }
 }

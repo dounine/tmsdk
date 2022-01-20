@@ -59,7 +59,7 @@ class TMSdk {
                                     contentType
                                 )
                             )
-                        okHttpClient!!.newCall(build.build()).enqueue(object : okhttp3.Callback {
+                        okHttpClient.newCall(build.build()).enqueue(object : okhttp3.Callback {
                             override fun onFailure(call: Call, e: IOException) {
                                 Log.e(TAG, """"onFailure ${e.message}""")
                             }
@@ -273,7 +273,7 @@ class TMSdk {
                         .lowercase(Locale.getDefault())
                 )
             try {
-                val response = okHttpClient!!.newCall(build.build()).execute()
+                val response = okHttpClient.newCall(build.build()).execute()
                 val responseStr = response.body!!.string()
                 Log.i(TAG, "微信用户信息查询结果 " + responseStr)
                 return JSON.parseObject(responseStr, Wechat.LoginResponse::class.java)
@@ -323,7 +323,7 @@ class TMSdk {
                         .lowercase(Locale.getDefault())
                 )
             try {
-                val response = okHttpClient!!.newCall(build.build()).execute()
+                val response = okHttpClient.newCall(build.build()).execute()
                 val responseStr = response.body!!.string()
                 Log.i(TAG, "实名认证结果 " + responseStr)
                 return JSON.parseObject(responseStr, Identifys.IdentifyResponse::class.java)
@@ -356,7 +356,7 @@ class TMSdk {
                         .lowercase(Locale.getDefault())
                 )
             try {
-                val response = okHttpClient!!.newCall(build.build()).execute()
+                val response = okHttpClient.newCall(build.build()).execute()
                 val responseStr = response.body!!.string()
                 Log.i(TAG, "用户认证信息查询结果 " + responseStr)
                 return JSON.parseObject(responseStr, Identifys.QueryResponse::class.java)
@@ -394,7 +394,7 @@ class TMSdk {
                         .lowercase(Locale.getDefault())
                 )
             try {
-                val response = okHttpClient!!.newCall(build.build()).execute()
+                val response = okHttpClient.newCall(build.build()).execute()
                 val responseStr = response.body!!.string()
                 if (online) {
                     Log.i(TAG, "用户上线上报 " + responseStr)
@@ -429,7 +429,7 @@ class TMSdk {
                         .lowercase(Locale.getDefault())
                 )
             try {
-                val response = okHttpClient!!.newCall(build.build()).execute()
+                val response = okHttpClient.newCall(build.build()).execute()
                 val responseStr = response.body!!.string()
                 Log.i(TAG, "定单查询结果 " + responseStr)
                 return JSON.parseObject(responseStr, Wechat.OrderQueryResponse::class.java)
@@ -472,7 +472,7 @@ class TMSdk {
                         .lowercase(Locale.getDefault())
                 )
             try {
-                val response = okHttpClient!!.newCall(build.build()).execute()
+                val response = okHttpClient.newCall(build.build()).execute()
                 val responseStr = response.body!!.string()
                 Log.i(TAG, "微信支付创建结果 " + responseStr)
                 return JSON.parseObject(responseStr, Wechat.OrderResponse::class.java)
