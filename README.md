@@ -76,16 +76,26 @@ public class AndroidWithJS {
     }
 
     /**
-     * 手动控制SDK初始化，主要是为了使用授权后的用户ID
-     *
-     * @param appid     应用appid
-     * @param programId 天幕平台配置programId
-     * @param userId    用户自定义id,使用open_id,或者union_id
-     * @param channel   渠道
+     * 初始化appid,programId,channel
      */
     @JavascriptInterface
-    public String initSdk(String userId, String channel) {
-        TMSdk.Companion.init(context, MainActivity.appid, MainActivity.programId, userId, channel);
+    public void init(String appid, String programId, String channel, String weixinLoginCallbackName, String weixinPayCallbackName) {
+        StaticConfig.Companion.setAPPID(appid);
+        StaticConfig.Companion.setProgramId(programId);
+        StaticConfig.Companion.setCHANNEL(channel);
+        MainActivity.weixinInit(appid);
+        MainActivity.weixinLoginCallbackName = weixinLoginCallbackName;
+        MainActivity.weixinPayCallbackName = weixinPayCallbackName;
+    }
+
+    /**
+     * 手动控制SDK初始化，主要是为了使用授权后的用户ID
+     *
+     * @param userId 用户自定义id,使用open_id,或者union_id
+     */
+    @JavascriptInterface
+    public String loginReport(String userId) {
+        TMSdk.Companion.init(context, StaticConfig.Companion.getAPPID(), StaticConfig.Companion.getProgramId(), userId, StaticConfig.Companion.getCHANNEL());
         TMSdk.Companion.appStart();
         return "初始化成功";
     }
@@ -106,7 +116,7 @@ public class AndroidWithJS {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Wechat.OrderResponse response = TMSdk.Companion.weixinPayCreateOrder(MainActivity.programId, coin, userId, programParam);
+                Wechat.OrderResponse response = TMSdk.Companion.weixinPayCreateOrder(StaticConfig.Companion.getProgramId(), coin, userId, programParam);
                 EventBus.getDefault().post(
                         new WeixinPay(
                                 response
@@ -180,17 +190,12 @@ public class GameWebView extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         this.webView = view;
-        view.evaluateJavascript("javascript:pageFinished()", new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String s) {
-            }
-        });
     }
 
     //回调网页公开接受用户信息的function
     public void loginCallback(Wechat.LoginResponse loginResponse) {
         if (this.webView != null) {
-            this.webView.evaluateJavascript("javascript:weixinLoginCallback(" + TMSdk.Companion.objectToJson(loginResponse) + ")", new ValueCallback<String>() {
+            this.webView.evaluateJavascript("javascript:" + MainActivity.weixinLoginCallbackName + "(" + TMSdk.Companion.objectToJson(loginResponse) + ")", new ValueCallback<String>() {
                 @Override
                 public void onReceiveValue(String s) {
                 }
@@ -201,7 +206,7 @@ public class GameWebView extends WebViewClient {
     //回调网页公开接受用户支付回调的function
     public void payCallback(Wechat.PayResponse payResponse) {
         if (this.webView != null) {
-            this.webView.evaluateJavascript("javascript:weixinPayCallback(" + TMSdk.Companion.objectToJson(payResponse) + ")", new ValueCallback<String>() {
+            this.webView.evaluateJavascript("javascript:" + MainActivity.weixinPayCallbackName + "(" + TMSdk.Companion.objectToJson(payResponse) + ")", new ValueCallback<String>() {
                 @Override
                 public void onReceiveValue(String s) {
                 }
@@ -228,93 +233,146 @@ public class GameWebView extends WebViewClient {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+
 }
 ```
-4、编写游戏页面方法调用
+4、H5页面使用
 ```
-/**
+先在页面引入h5 sdk
+<script src="https://cdn.kuaiyugo.com/SDK/h5_sdk/tmsdk.js"></script>
+<script>
+    let loginData;
+    let payOrder;
+
+    /**
+     * 配置
+     */
+    TMSdk.config({
+        appid: "wx1968f4cbe8ebfe5d",
+        programId: "92c7461171c211ecaba983a259950266",
+        channel: ""
+    });
+
+    /**
      * 微信登录
+     * {
+     *  "data": {
+     *      "app_id": "wx1968f4cbe8ebfe5d",
+     *      "avatar_url": "https://thirdwx.qlogo.cn/mmopen/vi_32/Vegkzdr6BasIicicyjic1JJNtick8qO03oGc7Go6t0Jhm4cqiaNdqNYgElPCqiaqsIQvPTv8Rm85yPA1fMiaaRWmSsqLA/132",
+     *      "gender": 0, //0未知,1男,2女
+     *      "last_login_time": 1642746317,
+     *      "login_city": "广州市",
+     *      "login_district": "海珠区",
+     *      "login_province": "广东省",
+     *      "new": false,
+     *      "nick_name": "lake",
+     *      "open_id": "oeCdT6vf30VwgQla7X_WcxxLneVc",
+     *      "recharged": 0,
+     *      "recharged_times": 0,
+     *      "union_id": "oj7QN1cI4TCKVcSB0cXYj6q-GoPk"
+     *  },
+     *  "err": 0,
+     *  "msg": "请求成功"
+     *  }
      */
     function weixinLogin() {
-        window.android.weixinLogin();
-    }
-
-    /**
-     * 微信登录回调
-     * @param data
-     */
-    function weixinLoginCallback(data) {
-        loginData = data;
-        let dataStr = JSON.stringify(data);
-        document.querySelector("#loginResult").innerHTML = dataStr;
-        console.log("微信授权登录回调 " + dataStr);
-        if (loginData.data && loginData.data.open_id) {
-            document.querySelector("#sdkInitBtn").removeAttribute("disabled");
-            document.querySelector("#weixinPayBtn").removeAttribute("disabled");
-            document.querySelector("#identifyBtn").removeAttribute("disabled");
-            document.querySelector("#identifyQueryBtn").removeAttribute("disabled");
-        }
-    }
-
-    /**
-     * sdk初始化
-     */
-    function sdkInit() {
-        let result = window.android.initSdk(loginData.data.open_id, "channel");
-        document.querySelector("#initResult").innerHTML = result;
-        console.log("初始化结果", result);
+        TMSdk.weixinLogin().then(function (data) {
+            loginData = data;
+            let dataStr = JSON.stringify(data);
+            document.querySelector("#loginResult").innerHTML = dataStr;
+            console.log("微信授权登录回调 " + dataStr);
+            if (loginData.data && loginData.data.open_id) {
+                TMSdk.loginReport({userId: loginData.data.open_id});//数据登录上报
+                document.querySelector("#weixinPayBtn").removeAttribute("disabled");
+                document.querySelector("#identifyBtn").removeAttribute("disabled");
+                document.querySelector("#identifyQueryBtn").removeAttribute("disabled");
+            }
+        });
     }
 
     /**
      * 调用微信支付
+     *  {
+     *     "action":"ok",
+     *     "msg":"支付成功",//或者支付失败
+     *     "orderId":"xxxxxxxxx"
+     * }
      */
     function weixinPay() {
-        //参数1：金额(单位角)
-        //参数2：用户id
-        //参数3：参数，用于服务支付成功回调识别
-        window.android.weixinPay(1, loginData.data.open_id, "test")
-    }
-
-    /**
-     * 支付回调结果
-     * @param data
-     */
-    function weixinPayCallback(data) {
-        payOrder = data;
-        let dataStr = JSON.stringify(data);
-        document.querySelector("#payResult").innerHTML = dataStr;
-        if (data.orderId) {
-            document.querySelector("#weixinOrderQueryBtn").removeAttribute("disabled");
-        }
-        console.log("微信支付回调 " + dataStr);
+        TMSdk.weixinPay({
+            coin: 1,//1支付1角
+            userId: loginData.data.open_id,//用户id
+            programParam: 'test'//参数(用于服务器回调识别用)
+        }).then(function (data) {
+            payOrder = data;
+            let dataStr = JSON.stringify(data);
+            document.querySelector("#payResult").innerHTML = dataStr;
+            if (data.orderId) {
+                document.querySelector("#weixinOrderQueryBtn").removeAttribute("disabled");
+            }
+            console.log("微信支付回调 " + dataStr);
+        });
     }
 
     /**
      * 微信支付定单查询
+     * {
+     *     "data":{
+     *         "order_status":1, //订单状态：0下单，1待发货，2取消订单，3发货成功
+     *         "pay_status":1 //支付状态：0待支付，1支付成功，2支付失败
+     *     },
+     *     "err":0, //0成功，非0请求异常
+     *     "msg":"请求成功"
+     * }
      */
     function weixinOrderQuery() {
-        let result = window.android.queryOrder(payOrder.orderId);
-        document.querySelector("#payQueryResult").innerHTML = result;
-        console.log("微信定单查询结果 " + result);
+        TMSdk.weixinOrderQuery({orderId: payOrder.orderId})
+            .then(function (data) {
+                document.querySelector("#payQueryResult").innerHTML = data;
+                console.log("微信定单查询结果 " + data);
+            })
     }
 
     /**
-     * 实时认证查询
+     * 实名认证查询
+     * {
+     *     "data":{
+     *         "result":true //true是已经认证,false未认证
+     *     },
+     *     "err":0, //0成功，非0请求异常
+     *     "msg":"请求成功"
+     * }
      */
     function identifyQuery() {
-        let result = window.android.identifyQuery(loginData.data.open_id);
-        document.querySelector("#identifyQueryResult").innerHTML = result;
-        console.log("实时认证查询结果 " + result);
+        TMSdk.identifyQuery({userId: loginData.data.open_id}).then(function (data) {
+            document.querySelector("#identifyQueryResult").innerHTML = data;
+            console.log("实名认证查询结果 " + data);
+        })
     }
 
     /**
-     * 实时认证
+     * 实名认证
+     * {
+     *     "data":{
+     *         "result":true //true是已经认证,false未认证
+     *     },
+     *     "err":0, //0成功，非0请求异常
+     *     "msg":"请求成功"
+     * }
      */
     function identify() {
-        let result = window.android.identify(loginData.data.open_id, "李德松", "452525197305054416");
-        document.querySelector("#identifyResult").innerHTML = result;
-        console.log("实时认证结果 " + result);
+        TMSdk.identify({
+            userId: loginData.data.open_id,
+            name: "李德松",
+            id: "452525197305054416"
+        }).then(function (data) {
+            document.querySelector("#identifyResult").innerHTML = data;
+            console.log("实名认证结果 " + data);
+        })
     }
+
+</script>  
 ```
 AndroidManifest.xml
 ```

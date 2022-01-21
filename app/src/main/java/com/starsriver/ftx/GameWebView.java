@@ -21,11 +21,6 @@ public class GameWebView extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         this.webView = view;
-//        view.evaluateJavascript("javascript:pageFinished()", new ValueCallback<String>() {
-//            @Override
-//            public void onReceiveValue(String s) {
-//            }
-//        });
     }
 
     //回调网页公开接受用户信息的function
