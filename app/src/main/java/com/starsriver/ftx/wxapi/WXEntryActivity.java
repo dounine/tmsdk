@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.dounine.tmsdk.core.TMSdk;
 import com.dounine.tmsdk.model.Wechat;
+import com.dounine.tmsdk.util.StaticConfig;
 import com.starsriver.ftx.MainActivity;
 import com.starsriver.ftx.events.AuthLogin;
 import com.starsriver.ftx.events.WeixinPayCallback;
@@ -53,7 +54,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                Wechat.LoginResponse response = TMSdk.Companion.wechatUserInfo(MainActivity.programId, code);
+                                Wechat.LoginResponse response = TMSdk.Companion.wechatUserInfo(StaticConfig.Companion.getProgramId(), code);
                                 EventBus.getDefault().post(
                                         new AuthLogin(
                                                 response

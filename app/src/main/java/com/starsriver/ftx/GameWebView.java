@@ -21,17 +21,17 @@ public class GameWebView extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         this.webView = view;
-        view.evaluateJavascript("javascript:pageFinished()", new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String s) {
-            }
-        });
+//        view.evaluateJavascript("javascript:pageFinished()", new ValueCallback<String>() {
+//            @Override
+//            public void onReceiveValue(String s) {
+//            }
+//        });
     }
 
     //回调网页公开接受用户信息的function
     public void loginCallback(Wechat.LoginResponse loginResponse) {
         if (this.webView != null) {
-            this.webView.evaluateJavascript("javascript:weixinLoginCallback(" + TMSdk.Companion.objectToJson(loginResponse) + ")", new ValueCallback<String>() {
+            this.webView.evaluateJavascript("javascript:" + MainActivity.weixinLoginCallbackName + "(" + TMSdk.Companion.objectToJson(loginResponse) + ")", new ValueCallback<String>() {
                 @Override
                 public void onReceiveValue(String s) {
                 }
@@ -42,7 +42,7 @@ public class GameWebView extends WebViewClient {
     //回调网页公开接受用户支付回调的function
     public void payCallback(Wechat.PayResponse payResponse) {
         if (this.webView != null) {
-            this.webView.evaluateJavascript("javascript:weixinPayCallback(" + TMSdk.Companion.objectToJson(payResponse) + ")", new ValueCallback<String>() {
+            this.webView.evaluateJavascript("javascript:" + MainActivity.weixinPayCallbackName + "(" + TMSdk.Companion.objectToJson(payResponse) + ")", new ValueCallback<String>() {
                 @Override
                 public void onReceiveValue(String s) {
                 }

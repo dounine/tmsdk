@@ -11,6 +11,7 @@ class StaticConfig {
 
         //可变
         var APPID: String = ""
+        var programId: String = ""
         var USERID: String = ""
         var CHANNEL: String = ""
     }

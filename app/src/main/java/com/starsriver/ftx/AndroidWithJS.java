@@ -5,6 +5,7 @@ import android.webkit.JavascriptInterface;
 
 import com.dounine.tmsdk.core.TMSdk;
 import com.dounine.tmsdk.model.Wechat;
+import com.dounine.tmsdk.util.StaticConfig;
 import com.starsriver.ftx.events.WeixinPay;
 
 import org.greenrobot.eventbus.EventBus;
@@ -21,16 +22,26 @@ public class AndroidWithJS {
     }
 
     /**
-     * 手动控制SDK初始化，主要是为了使用授权后的用户ID
-     *
-     * @param appid     应用appid
-     * @param programId 天幕平台配置programId
-     * @param userId    用户自定义id,使用open_id,或者union_id
-     * @param channel   渠道
+     * 初始化appid,programId,channel
      */
     @JavascriptInterface
-    public String initSdk(String userId, String channel) {
-        TMSdk.Companion.init(context, MainActivity.appid, MainActivity.programId, userId, channel);
+    public void init(String appid, String programId, String channel, String weixinLoginCallbackName, String weixinPayCallbackName) {
+        StaticConfig.Companion.setAPPID(appid);
+        StaticConfig.Companion.setProgramId(programId);
+        StaticConfig.Companion.setCHANNEL(channel);
+        MainActivity.weixinInit(appid);
+        MainActivity.weixinLoginCallbackName = weixinLoginCallbackName;
+        MainActivity.weixinPayCallbackName = weixinPayCallbackName;
+    }
+
+    /**
+     * 手动控制SDK初始化，主要是为了使用授权后的用户ID
+     *
+     * @param userId 用户自定义id,使用open_id,或者union_id
+     */
+    @JavascriptInterface
+    public String loginReport(String userId) {
+        TMSdk.Companion.init(context, StaticConfig.Companion.getAPPID(), StaticConfig.Companion.getProgramId(), userId, StaticConfig.Companion.getCHANNEL());
         TMSdk.Companion.appStart();
         return "初始化成功";
     }
@@ -51,7 +62,7 @@ public class AndroidWithJS {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Wechat.OrderResponse response = TMSdk.Companion.weixinPayCreateOrder(MainActivity.programId, coin, userId, programParam);
+                Wechat.OrderResponse response = TMSdk.Companion.weixinPayCreateOrder(StaticConfig.Companion.getProgramId(), coin, userId, programParam);
                 EventBus.getDefault().post(
                         new WeixinPay(
                                 response

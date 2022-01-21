@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 
 import androidx.navigation.ui.AppBarConfiguration;
 
+import com.dounine.tmsdk.util.StaticConfig;
 import com.starsriver.ftx.events.AuthLogin;
 import com.starsriver.ftx.events.WeixinPay;
 import com.starsriver.ftx.events.WeixinPayCallback;
@@ -37,17 +38,19 @@ public class MainActivity extends AppCompatActivity {
     public static IWXAPI wx_api;
     private static final String TAG = "TMSdk";
 
-    public static String appid = "wx1968f4cbe8ebfe5d";
-    public static String programId = "92c7461171c211ecaba983a259950266";
+    //    public static String appid = "wx1968f4cbe8ebfe5d";
+//    public static String programId = "92c7461171c211ecaba983a259950266";
     public Wechat.OrderResponse order;
+    private static Context context;
+    public  static String weixinLoginCallbackName;
+    public static String weixinPayCallbackName;
     private GameWebView gameWebView = new GameWebView();
 
     /**
      * 微信SDK初始化(包含授权登录与支付)
      *
-     * @param context
      */
-    public static void weixinInit(Context context) {
+    public static void weixinInit(String appid) {
         wx_api = WXAPIFactory.createWXAPI(context, appid, true);
         wx_api.registerApp(appid);
     }
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
      * @return 定单信息
      */
     public static Wechat.OrderQueryResponse weixinOrderQuery(String orderId) {
-        return TMSdk.Companion.orderQuery(programId, orderId);
+        return TMSdk.Companion.orderQuery(StaticConfig.Companion.getProgramId(), orderId);
     }
 
     /**
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
      * @return 认证信息
      */
     public static Identifys.QueryResponse identifyQuery(String userId) {
-        return TMSdk.Companion.identifyQuery(programId, userId);
+        return TMSdk.Companion.identifyQuery(StaticConfig.Companion.getProgramId(), userId);
     }
 
     /**
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
      * @return 认证是否成功
      */
     public static Identifys.IdentifyResponse identify(String userId, String name, String id) {
-        return TMSdk.Companion.identify(programId, userId, name, id);
+        return TMSdk.Companion.identify(StaticConfig.Companion.getProgramId(), userId, name, id);
     }
 
     /**
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     public static void weixinLogin() {
         SendAuth.Req req = new SendAuth.Req();
         req.scope = "snsapi_userinfo";
-        req.state = appid;
+        req.state = "";
         wx_api.sendReq(req);
     }
 
@@ -137,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             //跳转微信并拉起支付
             PayReq request = new PayReq();
             Wechat.OrderItem orderItem = order.getData().getItem();
-            request.appId = appid;
+            request.appId = orderItem.getAppid();
             request.partnerId = orderItem.getPartnerid();
             request.prepayId = orderItem.getPrepayid();
             request.packageValue = orderItem.getPackage();
@@ -167,12 +170,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
 
         //注册Event事件
         EventBus.getDefault().register(this);
 
         //注册微信Activity
-        weixinInit(this);
+//        weixinInit(this);
 
         setContentView(R.layout.activity_main);
         webView = findViewById(R.id.webview);
