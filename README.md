@@ -2,6 +2,20 @@
 
 ## 天幕安卓SDK
 
+## 打包
+```
+./gradlew clean channelRelease
+#或
+./gradlew clean build
+```
+修改打包后的渠道
+```
+java -jar ./tools/VasDolly.jar put -c "hello" ./app/build/channel/app-1.0-1-default-release.apk ./app/build/channel/app-1.0-1-default-release.apk
+#或
+java -jar ./tools/VasDolly.jar put -c "hello" ./app/release/app-release.apk ./app/release/app-release.apk
+```
+[多渠道参考](https://github.com/Tencent/VasDolly)
+
 ## 说明
 
 1. 用户ID，可使用系统生成，用户卸载再安装，既视为一个新用户。
