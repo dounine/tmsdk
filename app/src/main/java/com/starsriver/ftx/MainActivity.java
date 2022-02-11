@@ -22,6 +22,7 @@ import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.tencent.vasdolly.helper.ChannelReaderUtil;
 
 import android.view.Menu;
 import android.webkit.WebSettings;
@@ -38,19 +39,22 @@ public class MainActivity extends AppCompatActivity {
     public static IWXAPI wx_api;
     private static final String TAG = "TMSdk";
 
-    //    public static String appid = "wx1968f4cbe8ebfe5d";
-//    public static String programId = "92c7461171c211ecaba983a259950266";
     public Wechat.OrderResponse order;
     private static Context context;
-    public  static String weixinLoginCallbackName;
+    public static String weixinLoginCallbackName;
     public static String weixinPayCallbackName;
     private GameWebView gameWebView = new GameWebView();
 
     /**
      * 微信SDK初始化(包含授权登录与支付)
-     *
      */
     public static void weixinInit(String appid) {
+        String channel = ChannelReaderUtil.getChannel(context);
+        if (channel == null) {
+            StaticConfig.Companion.setCHANNEL("");
+        } else {
+            StaticConfig.Companion.setCHANNEL(channel);
+        }
         wx_api = WXAPIFactory.createWXAPI(context, appid, true);
         wx_api.registerApp(appid);
     }
@@ -185,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(gameWebView);
         //暴露给js对象为android，可自己定义
         webView.addJavascriptInterface(new AndroidWithJS(this), "android");
-//        webView.loadUrl("http://ddz.kuaiyugo.com/");
+//        webView.loadUrl("http://h5fssdk.98wan.cn/login/xinghanh5/4060");
         webView.loadUrl("file:///android_asset/index.html");
     }
 

@@ -167,6 +167,7 @@ class TMSdk {
                             ext = Logs.Ext(
                                 ccode = this.channel!!,
                                 ak = this.appid!!,
+                                aid = this.appid!!,
                                 type = "login_in",
                                 tid = it!!,
                                 uid = it!!,

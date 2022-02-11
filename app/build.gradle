@@ -1,9 +1,24 @@
 plugins {
     id 'com.android.application'
+    id 'com.tencent.vasdolly'
 }
-
 android {
     compileSdk 31
+
+    channel{
+        //指定渠道文件
+        channelFile = file("/Users/lake/dounine/github/tmsdk/channel.txt")
+        //多渠道包的输出目录，默认为new File(project.buildDir,"channel")
+        outputDir = new File(project.buildDir,"channel")
+        //多渠道包的命名规则，默认为：${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}-${buildTime}
+        apkNameFormat ='${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}'
+        //快速模式：生成渠道包时不进行校验（速度可以提升10倍以上，默认为false）
+        fastMode = false
+        //buildTime的时间格式，默认格式：yyyyMMdd-HHmmss
+        buildTimeDateFormat = 'yyyyMMdd-HH:mm:ss'
+        //低内存模式（仅针对V2签名，默认为false）：只把签名块、中央目录和EOCD读取到内存，不把最大头的内容块读取到内存，在手机上合成APK时，可以使用该模式
+        lowMemory = false
+    }
 
     defaultConfig {
         applicationId "com.starsriver.ftx"
@@ -16,7 +31,6 @@ android {
     }
 
     signingConfigs {
-
         release {
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 storeFile file(RELEASE_STORE_FILE)
@@ -33,12 +47,23 @@ android {
             jniDebuggable false
             renderscriptDebuggable false
             minifyEnabled true
-            shrinkResources true
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (project.hasProperty("RELEASE_STORE_FILE")) {
-                signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
+            externalNativeBuild {
+                ndkBuild {
+                    arguments 'NDK_DEBUG=0'
+                }
             }
-
+        }
+        debug {
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+            minifyEnabled false
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
             externalNativeBuild {
                 ndkBuild {
                     arguments 'NDK_DEBUG=0'
@@ -59,6 +84,7 @@ repositories {
     google()
 }
 dependencies {
+    implementation 'com.tencent.vasdolly:helper:3.0.3'
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
@@ -66,8 +92,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android:6.8.0'
-    implementation 'com.dounine:tmsdk:1.0.0'
-//    implementation project(path: ':TMSdk') //测试专用
+//    implementation 'com.dounine:tmsdk:1.0.0'
+    implementation project(path: ':TMSdk') //测试专用
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

@@ -94,8 +94,8 @@ android {
 }
 
 repositories {
-    google()
     mavenCentral()
+    google()
 }
 
 

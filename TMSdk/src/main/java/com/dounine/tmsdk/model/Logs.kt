@@ -5,6 +5,7 @@ object Logs {
     data class Ext(
         val ccode: String,
         val ak: String,
+        val aid: String,
         val type: String,
         val tid: String,
         val uid: String,
