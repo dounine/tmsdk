@@ -186,6 +186,10 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.webview);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAppCachePath(context.getCacheDir().getAbsolutePath());
+        webSettings.setAppCacheEnabled(true);
         webView.setWebViewClient(gameWebView);
         //暴露给js对象为android，可自己定义
         webView.addJavascriptInterface(new AndroidWithJS(this), "android");

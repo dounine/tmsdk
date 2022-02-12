@@ -33,11 +33,27 @@ TMSDK.prototype = {
         let name = this.weixinLoginCallbackName;
         let init = this.init;
         return new Promise(function (resolve, reject) {
+            let loginInfo = localStorage.getItem('loginInfo');
+            //30天缓存用户登录数据
+            if (loginInfo && (loginInfo.cacheTime + 30 * 24 * 60 * 60 * 1000) < new Date().getTime()) {
+                loginInfo = null;
+            }
             window[name] = function (data) {
-                resolve(data);
+                let copyData = {
+                    ...data,
+                    cacheTime: new Date().getTime()
+                };
+                resolve(copyData);
+                localStorage.setItem('loginInfo', JSON.stringify(copyData));
             };
             if (init) {
-                window.android.weixinLogin();
+                if (loginInfo) {
+                    console.info("使用缓存:"+loginInfo);
+                    resolve(JSON.parse(loginInfo));
+                } else {
+                    console.info("无缓存数据");
+                    window.android.weixinLogin();
+                }
             } else {
                 let errorMsg = "请先调用config方法进行初始化";
                 reject(errorMsg);
