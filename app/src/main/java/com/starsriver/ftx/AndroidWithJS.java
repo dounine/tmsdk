@@ -1,6 +1,7 @@
 package com.starsriver.ftx;
 
 import android.content.Context;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import com.dounine.tmsdk.core.TMSdk;
@@ -16,6 +17,7 @@ import org.greenrobot.eventbus.EventBus;
 public class AndroidWithJS {
 
     private Context context;
+    private String TAG = "TMSdk";
 
     public AndroidWithJS(Context context) {
         this.context = context;
@@ -26,6 +28,7 @@ public class AndroidWithJS {
      */
     @JavascriptInterface
     public void init(String appid, String programId, String channel, String weixinLoginCallbackName, String weixinPayCallbackName) {
+        Log.i(TAG, "init appid:" + appid + " , programId:" + programId + " , channel:" + channel + " , weixinLoginCallbackName:" + weixinLoginCallbackName + " , weixinPayCallbackName:" + weixinPayCallbackName);
         StaticConfig.Companion.setAPPID(appid);
         StaticConfig.Companion.setProgramId(programId);
         StaticConfig.Companion.setCHANNEL(channel);
@@ -41,6 +44,7 @@ public class AndroidWithJS {
      */
     @JavascriptInterface
     public String loginReport(String userId) {
+        Log.i(TAG, "loginReport userId:" + userId);
         TMSdk.Companion.init(context, StaticConfig.Companion.getAPPID(), StaticConfig.Companion.getProgramId(), userId, StaticConfig.Companion.getCHANNEL());
         TMSdk.Companion.appStart();
         return "初始化成功";
@@ -59,6 +63,7 @@ public class AndroidWithJS {
      */
     @JavascriptInterface
     public void weixinPay(int coin, String userId, String programParam) {
+        Log.i(TAG, "weixinPay coin:" + coin + " , userId:" + userId + " , programParam:" + programParam);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,6 +95,7 @@ public class AndroidWithJS {
      */
     @JavascriptInterface
     public String queryOrder(String orderId) {
+        Log.i(TAG, "queryOrder orderId:" + orderId);
         return TMSdk.Companion.objectToJson(MainActivity.weixinOrderQuery(orderId));
     }
 
@@ -106,6 +112,7 @@ public class AndroidWithJS {
      */
     @JavascriptInterface
     public String identifyQuery(String userId) {
+        Log.i(TAG, "identifyQuery userId:" + userId);
         return TMSdk.Companion.objectToJson(MainActivity.identifyQuery(userId));
     }
 
@@ -122,6 +129,7 @@ public class AndroidWithJS {
      */
     @JavascriptInterface
     public String identify(String userId, String name, String id) {
+        Log.i(TAG, "identify userId:" + userId + " , name:" + name + " , id:" + id);
         return TMSdk.Companion.objectToJson(MainActivity.identify(userId, name, id));
     }
 
