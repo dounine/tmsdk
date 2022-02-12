@@ -5,6 +5,7 @@ function TMSDK() {
     this.channel = "";
     this.weixinLoginCallbackName = "weixinLoginCallback";
     this.weixinPayCallbackName = "weixinPayCallback";
+    this.expireTime = 0;
 }
 
 TMSDK.prototype = {
@@ -12,12 +13,14 @@ TMSDK.prototype = {
     config: function ({
                           appid,
                           programId,
-                          channel = ""
+                          channel = "",
+                          expireTime = 30 * 24 * 60 * 60 * 1000
                       }) {
         this.init = true;
         this.appid = appid;
         this.programId = programId;
         this.channel = channel;
+        this.expireTime = expireTime;
         window.android.init(
             this.appid,
             this.programId,
@@ -32,10 +35,11 @@ TMSDK.prototype = {
     weixinLogin: function () {
         let name = this.weixinLoginCallbackName;
         let init = this.init;
+        let expireTime = this.expireTime;
         return new Promise(function (resolve, reject) {
             let loginInfo = localStorage.getItem('loginInfo');
             //30天缓存用户登录数据
-            if (loginInfo && (loginInfo.cacheTime + 30 * 24 * 60 * 60 * 1000) < new Date().getTime()) {
+            if (loginInfo && (loginInfo.cacheTime + expireTime) < new Date().getTime()) {
                 loginInfo = null;
             }
             window[name] = function (data) {
@@ -48,7 +52,7 @@ TMSDK.prototype = {
             };
             if (init) {
                 if (loginInfo) {
-                    console.info("使用缓存:"+loginInfo);
+                    console.info("使用缓存:" + loginInfo);
                     resolve(JSON.parse(loginInfo));
                 } else {
                     console.info("无缓存数据");
