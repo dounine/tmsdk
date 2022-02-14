@@ -166,7 +166,7 @@ class TMSdk {
                             v = StaticConfig.VERSION,
                             ext = Logs.Ext(
                                 ccode = this.channel!!,
-                                ak = this.appid!!,
+                                ak = this.programId!!,
                                 aid = this.appid!!,
                                 type = "login_in",
                                 tid = it!!,
