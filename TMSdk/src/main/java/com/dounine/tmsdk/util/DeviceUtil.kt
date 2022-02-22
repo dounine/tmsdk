@@ -3,6 +3,7 @@ package com.dounine.tmsdk.util
 import android.content.Context
 import android.text.TextUtils
 import android.util.Log
+import com.blankj.utilcode.util.DeviceUtils
 import java.util.*
 
 class DeviceUtil {
@@ -18,6 +19,14 @@ class DeviceUtil {
                 spHelper.putString(DEVICE_ID, deviceId)
             }
             return deviceId
+        }
+
+        fun getModel(): String {
+            return DeviceUtils.getModel()
+        }
+
+        fun getBrand(): String {
+            return DeviceUtils.getManufacturer()
         }
     }
 }

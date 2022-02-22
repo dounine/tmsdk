@@ -80,7 +80,11 @@
         TMSdk.weixinPay({
             coin: 1,//1支付1角
             userId: loginData.data.open_id,//用户id
-            programParam: 'test'//参数(用于服务器回调识别用)
+            programParam: 'test',//参数(用于服务器回调识别用)
+            goodsName: '100金币', //商品名称[可选]
+            zone: '第一区', //区服[可选]
+            gameUid: 'abc', //游戏id[可选]
+            gameNickname: 'Lake' //游戏昵称[可选]
         }).then(function (data) {
             payOrder = data;
             let dataStr = JSON.stringify(data);

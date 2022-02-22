@@ -1,11 +1,14 @@
 package com.starsriver.ftx;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import com.dounine.tmsdk.core.TMSdk;
+import com.dounine.tmsdk.model.Logs;
 import com.dounine.tmsdk.model.Wechat;
+import com.dounine.tmsdk.util.DeviceUtil;
 import com.dounine.tmsdk.util.StaticConfig;
 import com.starsriver.ftx.events.WeixinPay;
 
@@ -62,12 +65,23 @@ public class AndroidWithJS {
      * 微信拉起支付支付
      */
     @JavascriptInterface
-    public void weixinPay(int coin, String userId, String programParam) {
-        Log.i(TAG, "weixinPay coin:" + coin + " , userId:" + userId + " , programParam:" + programParam);
+    public void weixinPay(int coin, String userId, String programParam, String goodsName, String zone, String gameUid, String gameNickname) {
+        Log.i(TAG, "weixinPay coin:" + coin + " , userId:" + userId + " , programParam:" + programParam + " , goodsName:" + goodsName + " , zone:" + zone + " , gameNickname:" + gameNickname);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Wechat.OrderResponse response = TMSdk.Companion.weixinPayCreateOrder(StaticConfig.Companion.getProgramId(), coin, userId, programParam);
+                Wechat.OrderResponse response = TMSdk.Companion.weixinPayCreateOrder(
+                        StaticConfig.Companion.getProgramId(),
+                        coin,
+                        userId,
+                        programParam,
+                        DeviceUtil.Companion.getBrand(),
+                        DeviceUtil.Companion.getModel(),
+                        goodsName,
+                        zone,
+                        gameUid,
+                        gameNickname
+                );
                 EventBus.getDefault().post(
                         new WeixinPay(
                                 response

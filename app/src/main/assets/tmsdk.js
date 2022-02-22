@@ -84,7 +84,7 @@ TMSDK.prototype = {
      * userId 支付用户id
      * programParam 支付回调参数(用于支付成功给服务回调使用)
      */
-    weixinPay: function ({coin, userId, programParam}) {
+    weixinPay: function ({coin, userId, programParam, goodsName = "", zone = "", gameUid = "", gameNickname = ""}) {
         let name = this.weixinPayCallbackName;
         let init = this.init;
         return new Promise(function (resolve, reject) {
@@ -92,7 +92,7 @@ TMSDK.prototype = {
                 resolve(data);
             };
             if (init) {
-                window.android.weixinPay(coin, userId, programParam)
+                window.android.weixinPay(coin, userId, programParam, goodsName, zone, gameUid, gameNickname)
             } else {
                 let msg = "请先调用config方法进行初始化";
                 reject(msg);

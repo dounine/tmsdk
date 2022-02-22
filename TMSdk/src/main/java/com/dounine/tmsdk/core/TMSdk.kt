@@ -454,14 +454,20 @@ class TMSdk {
             programId: String,
             coin: Int,
             userId: String,
-            programParam: String
+            programParam: String,
+            deviceBrand: String,
+            deviceModel: String,
+            goodsName: String,
+            zone: String,
+            gameNickname: String,
+            gameUid: String
         ): Wechat.OrderResponse {
             val okHttpClient: OkHttpClient = OkHttpClient()
             val timestamp = (System.currentTimeMillis() / 1000).toString()
             val build = Request.Builder()
                 .url("https://api.kuaiyugo.com/api/payment/v1/programs/${programId}/app_wx_orders")
                 .post(
-                    """{"coin":$coin,"open_id":"${userId}","program_param":"${programParam}"}""".toRequestBody(
+                    """{"coin":$coin,"open_id":"${userId}","program_param":"${programParam}","device_brand":"${deviceBrand}","device_model":"${deviceModel}","goods_name":"${goodsName}","zone":"${zone}","game_uid":"${gameUid}","game_nickname":"${gameNickname}"}""".toRequestBody(
                         contentType
                     )
                 )
