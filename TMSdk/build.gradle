@@ -17,7 +17,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = 'com.dounine'
                 artifactId = 'tmsdk'
-                version = '1.0.2'
+                version = '1.0.3'
                 from components.release
                 artifact sourcesJar
 
