@@ -21,7 +21,11 @@ TMSDK.prototype = {
         this.programId = programId;
         this.channel = channel;
         this.expireTime = expireTime;
-        this.info = JSON.parse(window.android.info() || "{}");
+        if(window.android.info && typeof(window.android.info)=="function"){
+            this.info = JSON.parse(window.android.info());
+        }else{
+            this.info = {};
+        }
         window.android.init(
             this.appid,
             this.programId,
