@@ -112,18 +112,20 @@ public class AndroidWithJS {
         Log.i(TAG, "queryOrder orderId:" + orderId);
         return TMSdk.Companion.objectToJson(MainActivity.weixinOrderQuery(orderId));
     }
-Sf
+
     /**
      * 获取信息
+     *
      * @return
      */
     @JavascriptInterface
     public String info() {
-        return TMSdk.Companion.objectToJson(new Info(
-                "",
+        return String.format(
+                "{\"version\":\"%s\",\"brand\":\"%s\",\"model\":\"%s\"}",
+                "1.0.0",
                 DeviceUtil.Companion.getBrand(),
                 DeviceUtil.Companion.getModel()
-        ));
+        );
     }
 
 

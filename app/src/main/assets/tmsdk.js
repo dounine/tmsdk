@@ -21,6 +21,7 @@ TMSDK.prototype = {
         this.programId = programId;
         this.channel = channel;
         this.expireTime = expireTime;
+        this.info = JSON.parse(window.android.info() || "{}");
         window.android.init(
             this.appid,
             this.programId,
@@ -87,12 +88,17 @@ TMSDK.prototype = {
     weixinPay: function ({coin, userId, programParam, goodsName = "", zone = "", gameUid = "", gameNickname = ""}) {
         let name = this.weixinPayCallbackName;
         let init = this.init;
+        let info = this.info;
         return new Promise(function (resolve, reject) {
             window[name] = function (data) {
                 resolve(data);
             };
             if (init) {
-                window.android.weixinPay(coin, userId, programParam, goodsName, zone, gameUid, gameNickname)
+                if(info.version){
+                    window.android.weixinPay(coin, userId, programParam, goodsName, zone, gameUid, gameNickname)
+                }else{
+                    window.android.weixinPay(coin, userId, programParam, goodsName)
+                }
             } else {
                 let msg = "请先调用config方法进行初始化";
                 reject(msg);
