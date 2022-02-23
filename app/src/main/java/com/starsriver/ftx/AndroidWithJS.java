@@ -112,6 +112,20 @@ public class AndroidWithJS {
         Log.i(TAG, "queryOrder orderId:" + orderId);
         return TMSdk.Companion.objectToJson(MainActivity.weixinOrderQuery(orderId));
     }
+Sf
+    /**
+     * 获取信息
+     * @return
+     */
+    @JavascriptInterface
+    public String info() {
+        return TMSdk.Companion.objectToJson(new Info(
+                "",
+                DeviceUtil.Companion.getBrand(),
+                DeviceUtil.Companion.getModel()
+        ));
+    }
+
 
     /**
      * 用户实时认证查询
