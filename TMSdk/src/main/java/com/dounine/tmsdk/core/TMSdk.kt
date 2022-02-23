@@ -128,7 +128,7 @@ class TMSdk {
             this.channel = channel
 
             if (userId.length > 64) {
-                throw Exception("用户id长度不能超出64位")
+                throw Exception(TAG + ":用户id长度不能超出64位")
             }
 
             this.userId = userId
