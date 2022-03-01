@@ -24,8 +24,8 @@ android {
         applicationId "com.starsriver.ftx"
         minSdk 21
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 1 //发版本记得修改
+        versionName "1.0.0" //发版本记得修改
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -79,11 +79,12 @@ android {
         viewBinding true
     }
 }
-repositories {
-    mavenCentral()
-    google()
-}
+//repositories {
+//    mavenCentral()
+//    google()
+//}
 dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.tencent.vasdolly:helper:3.0.3'
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
@@ -92,8 +93,11 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android:6.8.0'
+    implementation 'com.github.xuexiangjys:XUpdate:2.1.1'
+//    implementation fileTree(dir:'libs',includes:['*jar'])
 //    implementation 'com.dounine:tmsdk:1.0.0'
-    implementation project(path: ':TMSdk') //测试专用
+    implementation project(path: ':TMSdk')
+    //测试专用
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

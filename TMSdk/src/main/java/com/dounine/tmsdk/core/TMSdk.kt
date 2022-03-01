@@ -155,7 +155,7 @@ class TMSdk {
             }
         }
 
-        fun appStart() {
+        fun appStart(version: String) {
             if (!this.start) {
                 this.userId.let {
                     this.start = true
@@ -163,7 +163,7 @@ class TMSdk {
                     message.obj = Logs.Log(
                         userLog = Logs.UserLog(
                             n = "a_tm_sdk",
-                            v = StaticConfig.VERSION,
+                            v = version,
                             ext = Logs.Ext(
                                 ccode = this.channel!!,
                                 ak = this.programId!!,

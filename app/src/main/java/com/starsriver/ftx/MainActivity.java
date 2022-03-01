@@ -1,5 +1,6 @@
 package com.starsriver.ftx;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -7,12 +8,11 @@ import com.dounine.tmsdk.core.TMSdk;
 import com.dounine.tmsdk.model.Identifys;
 import com.dounine.tmsdk.model.Wechat;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.KeyEvent;
-
-import androidx.navigation.ui.AppBarConfiguration;
 
 import com.dounine.tmsdk.util.StaticConfig;
 import com.starsriver.ftx.events.AuthLogin;
@@ -23,6 +23,9 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.vasdolly.helper.ChannelReaderUtil;
+import com.xuexiang.xupdate.XUpdate;
+import com.xuexiang.xupdate.proxy.IUpdateHttpService;
+import com.xuexiang.xupdate.utils.UpdateUtils;
 
 import android.view.Menu;
 import android.webkit.WebSettings;
@@ -32,9 +35,20 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
     private WebView webView;
     public static IWXAPI wx_api;
     private static final String TAG = "TMSdk";
@@ -44,17 +58,12 @@ public class MainActivity extends AppCompatActivity {
     public static String weixinLoginCallbackName;
     public static String weixinPayCallbackName;
     private GameWebView gameWebView = new GameWebView();
+    public static Application application;
 
     /**
      * 微信SDK初始化(包含授权登录与支付)
      */
     public static void weixinInit(String appid) {
-        String channel = ChannelReaderUtil.getChannel(context);
-        if (channel == null) {
-            StaticConfig.Companion.setCHANNEL("");
-        } else {
-            StaticConfig.Companion.setCHANNEL(channel);
-        }
         wx_api = WXAPIFactory.createWXAPI(context, appid, true);
         wx_api.registerApp(appid);
     }
@@ -174,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application = getApplication();
         context = this;
 
         //注册Event事件

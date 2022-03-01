@@ -93,10 +93,10 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
+//repositories {
+//    mavenCentral()
+//    google()
+//}
 
 
 dependencies {

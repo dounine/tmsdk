@@ -1,3 +1,8 @@
+/**
+ * 1.0.0 版本
+ * @constructor
+ * 兼容首发版本的支付bug，由于参数原因
+ */
 function TMSDK() {
     this.init = false;
     this.appid = "";
@@ -21,9 +26,9 @@ TMSDK.prototype = {
         this.programId = programId;
         this.channel = channel;
         this.expireTime = expireTime;
-        if(window.android.info && typeof(window.android.info)=="function"){
+        if (window.android.info && typeof (window.android.info) == "function") {
             this.info = JSON.parse(window.android.info());
-        }else{
+        } else {
             this.info = {};
         }
         window.android.init(
@@ -33,6 +38,9 @@ TMSDK.prototype = {
             this.weixinLoginCallbackName,
             this.weixinPayCallbackName
         );
+        if (window.android.update && typeof (window.android.update) == "function") {
+            window.android.update(`https://cdn.kuaiyugo.com/apk/${appid}/update.json`);
+        }
     },
     /**
      * 拉起微信登录
@@ -98,10 +106,10 @@ TMSDK.prototype = {
                 resolve(data);
             };
             if (init) {
-                if(info.version){
+                if (info.version) {
                     window.android.weixinPay(coin, userId, programParam, goodsName, zone, gameUid, gameNickname)
-                }else{
-                    window.android.weixinPay(coin, userId, programParam, goodsName)
+                } else {
+                    window.android.weixinPay(coin, userId, programParam)
                 }
             } else {
                 let msg = "请先调用config方法进行初始化";
