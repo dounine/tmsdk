@@ -60,6 +60,7 @@ public class AndroidWithJS {
     @JavascriptInterface
     public void update(String updateUrl) {
         try {
+            Log.i(TAG, "update url -> " + updateUrl);
             XUpdate.get()
                     .debug(false)
                     .isWifiOnly(false)
