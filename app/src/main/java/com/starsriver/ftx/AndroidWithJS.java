@@ -177,7 +177,7 @@ public class AndroidWithJS {
      * 微信拉起支付支付
      */
     @JavascriptInterface
-    public void weixinPay(int coin, String userId, String programParam, String goodsName, String zone, String gameUid, String gameNickname) {
+    public void weixinPay(int coin, String userId, String programParam, String goodsName, String zone, String gameNickname, String gameUid) {
         Log.i(TAG, "weixinPay coin:" + coin + " , userId:" + userId + " , programParam:" + programParam + " , goodsName:" + goodsName + " , zone:" + zone + " , gameNickname:" + gameNickname);
         new Thread(new Runnable() {
             @Override
@@ -191,8 +191,8 @@ public class AndroidWithJS {
                         DeviceUtil.Companion.getModel(),
                         goodsName,
                         zone,
-                        gameUid,
-                        gameNickname
+                        gameNickname,
+                        gameUid
                 );
                 EventBus.getDefault().post(
                         new WeixinPay(

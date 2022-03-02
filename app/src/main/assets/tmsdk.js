@@ -107,7 +107,7 @@ TMSDK.prototype = {
             };
             if (init) {
                 if (info.version) {
-                    window.android.weixinPay(coin, userId, programParam, goodsName, zone, gameUid, gameNickname)
+                    window.android.weixinPay(coin, userId, programParam, goodsName, zone, gameNickname, gameUid)
                 } else {
                     window.android.weixinPay(coin, userId, programParam)
                 }
